@@ -1,0 +1,148 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Book {
+private:
+    int id;
+    string title;
+    string author;
+    bool available;
+
+public:
+    Book(int i, string t, string a) {
+        id = i;
+        title = t;
+        author = a;
+        available = true;
+    }
+
+    int getId() { return id; }
+    string getTitle() { return title; }
+    string getAuthor() { return author; }
+    bool isAvailable() { return available; }
+
+    void borrow() { available = false; }
+    void giveBack() { available = true; }
+
+    void display() {
+        cout << id << " | " << title << " | " << author
+             << " | " << (available ? "Available" : "Borrowed") << endl;
+    }
+};
+
+class User {
+private:
+    int userId;
+    string name;
+    vector<int> borrowedBookIds;
+
+public:
+    User(int id, string n) {
+        userId = id;
+        name = n;
+    }
+
+    int getId() { return userId; }
+
+    void borrowBook(int bookId) {
+        borrowedBookIds.push_back(bookId);
+    }
+
+    void returnBook(int bookId) {
+        for (int i = 0; i < borrowedBookIds.size(); i++) {
+            if (borrowedBookIds[i] == bookId) {
+                borrowedBookIds.erase(borrowedBookIds.begin() + i);
+                break;
+            }
+        }
+    }
+};
+
+class Library {
+private:
+    vector<Book> books;
+    vector<User> users;
+
+public:
+    void addBook(Book b) {
+        books.push_back(b);
+    }
+
+    void registerUser(User u) {
+        users.push_back(u);
+    }
+
+    Book* findBook(int id) {
+        for (auto &b : books)
+            if (b.getId() == id) return &b;
+        return nullptr;
+    }
+
+    User* findUser(int id) {
+        for (auto &u : users)
+            if (u.getId() == id) return &u;
+        return nullptr;
+    }
+
+    void borrowBook(int userId, int bookId) {
+        Book* b = findBook(bookId);
+        User* u = findUser(userId);
+
+        if (!b || !u) {
+            cout << "User or Book not found\n";
+            return;
+        }
+
+        if (!b->isAvailable()) {
+            cout << "Book already borrowed\n";
+            return;
+        }
+
+        b->borrow();
+        u->borrowBook(bookId);
+        cout << "Book borrowed successfully\n";
+    }
+
+    void returnBook(int userId, int bookId) {
+        Book* b = findBook(bookId);
+        User* u = findUser(userId);
+
+        if (!b || !u) {
+            cout << "User or Book not found\n";
+            return;
+        }
+
+        b->giveBack();
+        u->returnBook(bookId);
+        cout << "Book returned successfully\n";
+    }
+
+    void displayBooks() {
+        for (auto &b : books)
+            b.display();
+    }
+};
+
+int main() {
+    Library lib;
+
+    lib.addBook(Book(1, "C++ Basics", "Bjarne"));
+    lib.addBook(Book(2, "OOP Design", "Gamma"));
+    lib.registerUser(User(101, "Alice"));
+
+    cout << "Initial Book List:\n";
+    lib.displayBooks();
+
+    cout << "\nBorrow Test:\n";
+    lib.borrowBook(101, 1);
+
+    cout << "\nAfter Borrow:\n";
+    lib.displayBooks();
+
+    cout << "\nReturn Test:\n";
+    lib.returnBook(101, 1);
+
+    cout << "\nFinal Book List:\n";
+    lib.displayBooks();
+}
