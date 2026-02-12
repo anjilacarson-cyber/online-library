@@ -1,0 +1,47 @@
+#include <iostream>
+using namespace std;
+
+class Items {
+private:
+    int quantity;
+    float unitCost;
+    float totalCost;
+
+public:
+    void input() {
+        cout << "Enter quantity: ";
+        cin >> quantity;
+
+        cout << "Enter unit cost: ";
+        cin >> unitCost;
+
+        totalCost = quantity * unitCost;
+    }
+
+    void display() {
+        cout << "Quantity bought: " << quantity << endl;
+        cout << "Unit cost: " << unitCost << endl;
+        cout << "Total cost: " << totalCost << endl;
+        cout << "----------------------" << endl;
+    }
+};
+
+int main() {
+    Items bread;
+    Items milk;
+
+    cout << "Enter details for bread" << endl;
+    bread.input();
+
+    cout << "\nEnter details for milk" << endl;
+    milk.input();
+
+    cout << "\n--- Purchase Summary ---" << endl;
+    cout << "Bread details:" << endl;
+    bread.display();
+
+    cout << "Milk details:" << endl;
+    milk.display();
+
+    return 0;
+}
